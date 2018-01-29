@@ -28,6 +28,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Optional
         AppStore.shared.debugEnabled = true
         
+        // Optional
+        AppStore.shared.debugLookupResult = try? AppStoreLookupModel.fake(version: "9.0.1.12434")
+        
+        
         // Optional - Change the name of your app. Useful if you have a long app name and want to display a shortened version in the update dialog (e.g., the UIAlertController).
 //        AppStore.shared.appName = "AppStore"
         

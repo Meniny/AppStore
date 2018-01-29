@@ -36,6 +36,9 @@ public final class AppStore: NSObject {
     /// The debug flag, which is disabled by default.
     /// When enabled, a stream of print() statements are logged to your console when a version check is performed.
     public lazy var debugEnabled = false
+    
+    /// A fake model for debugging, default is `nil`
+    public var debugLookupResult: AppStoreLookupModel?
 
     /// Determines the type of alert that should be shown.
     /// See the AppStore.AlertType enum for full details.
@@ -106,9 +109,6 @@ public final class AppStore: NSObject {
     /// The App's Singleton
     public static let shared = AppStore()
 
-    @available(*, deprecated: 1.2.0, unavailable, renamed: "shared")
-    public static let sharedInstance = AppStore()
-
     override init() {
         lastVersionCheckPerformedOnDate = UserDefaults.standard.object(forKey: AppStoreDefaults.storedVersionCheckDate.rawValue) as? Date
     }
@@ -172,6 +172,12 @@ public final class AppStore: NSObject {
 private extension AppStore {
 
     func performVersionCheck() {
+        if let result = self.debugLookupResult {
+            if self.debugEnabled {
+                self.processVersionCheck(with: result)
+                return
+            }
+        }
         do {
             let url = try iTunesURLFromString()
             let request = URLRequest(url: url, cachePolicy: .reloadIgnoringCacheData, timeoutInterval: 30)

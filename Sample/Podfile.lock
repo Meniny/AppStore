@@ -1,5 +1,5 @@
 PODS:
-  - AppStore (1.0.0)
+  - AppStore (1.0.1)
 
 DEPENDENCIES:
   - AppStore (from `../`)
@@ -9,7 +9,7 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  AppStore: f024f823293b7cc78858875785de2df42e16ee8b
+  AppStore: 08952beea333756f4c31729520139be38e60b90d
 
 PODFILE CHECKSUM: aa032c918edccc012604d04d8641d05def6a2245
 

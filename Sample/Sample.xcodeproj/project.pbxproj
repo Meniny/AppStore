@@ -26,6 +26,10 @@
 		6496A184201F0E2B00128A3A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6496A187201F0E2B00128A3A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6496A189201F0E2B00128A3A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6496A1DB201F272700128A3A /* _config.yml */ = {isa = PBXFileReference; lastKnownFileType = text; name = _config.yml; path = ../_config.yml; sourceTree = "<group>"; };
+		6496A1DC201F272700128A3A /* AppStore.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; name = AppStore.podspec; path = ../AppStore.podspec; sourceTree = "<group>"; };
+		6496A1DD201F272700128A3A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		6496A1DE201F272700128A3A /* LICENSE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = LICENSE.md; path = ../LICENSE.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +64,10 @@
 		6496A171201F0E2A00128A3A = {
 			isa = PBXGroup;
 			children = (
+				6496A1DB201F272700128A3A /* _config.yml */,
+				6496A1DC201F272700128A3A /* AppStore.podspec */,
+				6496A1DE201F272700128A3A /* LICENSE.md */,
+				6496A1DD201F272700128A3A /* README.md */,
 				6496A17C201F0E2B00128A3A /* Sample */,
 				6496A17B201F0E2B00128A3A /* Products */,
 				2C58683DDAC42AC34332B6EA /* Pods */,
