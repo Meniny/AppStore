@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="./Assets/AppStore.png" alt="AppStore">
+  <!-- <img src="./Assets/AppStore.png" alt="AppStore"> -->
   <br/><a href="https://cocoapods.org/pods/AppStore">
   <img alt="Version" src="https://img.shields.io/badge/version-1.0.0-brightgreen.svg">
   <img alt="Author" src="https://img.shields.io/badge/author-Meniny-blue.svg">
@@ -19,10 +19,6 @@
 ## 🏵 Introduction
 
 **AppStore** is an AppStore new version checking framework for iOS.
-
-## 🏙 Preview
-
-<img src="./Assets/Preview.png" style="width: 25%;"/>
 
 ## 📋 Requirements
 
