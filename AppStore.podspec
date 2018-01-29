@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'AppStore'
-  s.version          = '1.0.1'
+  s.version          = '1.1.0'
   s.summary          = 'An AppStore version cheaking framework in Swift.'
 
   s.homepage         = 'https://github.com/Meniny/AppStore'

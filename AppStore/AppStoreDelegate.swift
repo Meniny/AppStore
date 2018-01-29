@@ -51,6 +51,8 @@ public protocol AppStoreDelegate: NSObjectProtocol {
 
     /// AppStore performed version check and latest version is installed.
     func appStoreLatestVersionInstalled()
+    
+    func appStoreCustomPrompt(title: String, message: String, actions: [AppStore.PromptAction])
 }
 
 // MARK: - AppStoreDelegate Protocol Extension
@@ -87,6 +89,10 @@ public extension AppStoreDelegate {
 
     private func printMessage(_ function: String = #function) {
         AppStoreLog("The default implementation of \(function) is being called. You can ignore this message if you do not care to implement this method in your `AppStoreDelegate` conforming structure.")
+    }
+    
+    func appStoreCustomPrompt(title: String, message: String, actions: [AppStore.PromptAction]) {
+        
     }
 
 }

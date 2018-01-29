@@ -50,7 +50,18 @@ public final class AppStore: NSObject {
             revisionUpdateAlertType = alertType
         }
     }
+    
+    /// Prompt Type
+    ///
+    /// - system: Use `UIAlertController`
+    /// - custom: Use custom alert class
+    public enum PromptType {
+        case system
+        case custom
+    }
 
+    public var promptType: AppStore.PromptType = .system
+    
     /// Determines the type of alert that should be shown for major version updates: A.b.c
     /// Defaults to AppStore.AlertType.option.
     /// See the AppStore.AlertType enum for full details.
@@ -279,6 +290,54 @@ private extension AppStore {
 
 // MARK: - Helpers (Alert)
 
+public extension AppStore {
+    public enum PromptAction {
+        case update
+        case skip
+        case nextTime
+        
+        public var title: String {
+            switch self {
+            case .update:
+                return AppStore.shared.localizedUpdateButtonTitle()
+            case .skip:
+                return AppStore.shared.localizedSkipButtonTitle()
+            case .nextTime:
+                return AppStore.shared.localizedNextTimeButtonTitle()
+            }
+        }
+        
+        public var action: () -> Void {
+            switch self {
+            case .update:
+                return {
+                    AppStore.shared.launchAppStore()
+                    AppStore.shared.delegate?.appStoreUserDidLaunchAppStore()
+                    AppStore.shared.alertViewIsVisible = false
+                    return
+                }
+            case .skip:
+                return {
+                    if let currentAppStoreVersion = AppStore.shared.currentAppStoreVersion {
+                        UserDefaults.standard.set(currentAppStoreVersion, forKey: AppStoreDefaults.storedSkippedVersion.rawValue)
+                        UserDefaults.standard.synchronize()
+                    }
+                    
+                    AppStore.shared.delegate?.appStoreUserDidSkipVersion()
+                    AppStore.shared.alertViewIsVisible = false
+                    return
+                }
+            case .nextTime:
+                return {
+                    AppStore.shared.delegate?.appStoreUserDidCancel()
+                    AppStore.shared.alertViewIsVisible = false
+                    return
+                }
+            }
+        }
+    }
+}
+
 private extension AppStore {
     func showAlertIfCurrentAppStoreVersionNotSkipped() {
         alertType = setAlertType()
@@ -300,40 +359,72 @@ private extension AppStore {
 
         let newVersionMessage = localizedNewVersionMessage()
 
-        let alertController = UIAlertController(title: updateAvailableMessage, message: newVersionMessage, preferredStyle: .alert)
-
-        if let alertControllerTintColor = alertControllerTintColor {
-            alertController.view.tintColor = alertControllerTintColor
+        if self.promptType == .system {
+            let alertController = UIAlertController(title: updateAvailableMessage, message: newVersionMessage, preferredStyle: .alert)
+            
+            if let alertControllerTintColor = alertControllerTintColor {
+                alertController.view.tintColor = alertControllerTintColor
+            }
+            
+            switch alertType {
+            case .force:
+                alertController.addAction(updateAlertAction())
+            case .option:
+                alertController.addAction(nextTimeAlertAction())
+                alertController.addAction(updateAlertAction())
+            case .skip:
+                alertController.addAction(nextTimeAlertAction())
+                alertController.addAction(updateAlertAction())
+                alertController.addAction(skipAlertAction())
+            case .none:
+                delegate?.appStoreDidDetectNewVersionWithoutAlert(message: newVersionMessage, updateType: updateType)
+            }
+            
+            if alertType != .none && !alertViewIsVisible {
+                alertController.show()
+                alertViewIsVisible = true
+                delegate?.appStoreDidShowUpdateDialog(alertType: alertType)
+            }
+            
+        } else {
+            
+            if alertType != .none {// && !alertViewIsVisible {
+                
+                var actions = [AppStore.PromptAction]()
+                
+                switch alertType {
+                case .force:
+                    actions.append(.update)
+                    break
+                case .option:
+                    actions.append(.nextTime)
+                    actions.append(.update)
+                    break
+                case .skip:
+                    actions.append(.nextTime)
+                    actions.append(.skip)
+                    break
+                case .none:
+                    break
+                }
+                
+                self.delegate?.appStoreCustomPrompt(title: updateAvailableMessage, message: newVersionMessage, actions: actions)
+                alertViewIsVisible = true
+                delegate?.appStoreDidShowUpdateDialog(alertType: alertType)
+                
+            } else {
+                
+                self.delegate?.appStoreDidDetectNewVersionWithoutAlert(message: newVersionMessage, updateType: updateType)
+            }
         }
-
-        switch alertType {
-        case .force:
-            alertController.addAction(updateAlertAction())
-        case .option:
-            alertController.addAction(nextTimeAlertAction())
-            alertController.addAction(updateAlertAction())
-        case .skip:
-            alertController.addAction(nextTimeAlertAction())
-            alertController.addAction(updateAlertAction())
-            alertController.addAction(skipAlertAction())
-        case .none:
-            delegate?.appStoreDidDetectNewVersionWithoutAlert(message: newVersionMessage, updateType: updateType)
-        }
-
-        if alertType != .none && !alertViewIsVisible {
-            alertController.show()
-            alertViewIsVisible = true
-            delegate?.appStoreDidShowUpdateDialog(alertType: alertType)
-        }
+        
     }
 
     func updateAlertAction() -> UIAlertAction {
         let title = localizedUpdateButtonTitle()
         let action = UIAlertAction(title: title, style: .default) { [unowned self] _ in
             self.hideWindow()
-            self.launchAppStore()
-            self.delegate?.appStoreUserDidLaunchAppStore()
-            self.alertViewIsVisible = false
+            AppStore.PromptAction.update.action()
             return
         }
 
@@ -344,8 +435,7 @@ private extension AppStore {
         let title = localizedNextTimeButtonTitle()
         let action = UIAlertAction(title: title, style: .default) { [unowned self] _  in
             self.hideWindow()
-            self.delegate?.appStoreUserDidCancel()
-            self.alertViewIsVisible = false
+            AppStore.PromptAction.nextTime.action()
             return
         }
 
@@ -355,15 +445,8 @@ private extension AppStore {
     func skipAlertAction() -> UIAlertAction {
         let title = localizedSkipButtonTitle()
         let action = UIAlertAction(title: title, style: .default) { [unowned self] _ in
-
-            if let currentAppStoreVersion = self.currentAppStoreVersion {
-                UserDefaults.standard.set(currentAppStoreVersion, forKey: AppStoreDefaults.storedSkippedVersion.rawValue)
-                UserDefaults.standard.synchronize()
-            }
-
             self.hideWindow()
-            self.delegate?.appStoreUserDidSkipVersion()
-            self.alertViewIsVisible = false
+            AppStore.PromptAction.skip.action()
             return
         }
 

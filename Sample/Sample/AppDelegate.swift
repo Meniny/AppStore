@@ -31,6 +31,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Optional
         AppStore.shared.debugLookupResult = try? AppStoreLookupModel.fake(version: "9.0.1.12434")
         
+        AppStore.shared.promptType = .custom
+        
         
         // Optional - Change the name of your app. Useful if you have a long app name and want to display a shortened version in the update dialog (e.g., the UIAlertController).
 //        AppStore.shared.appName = "AppStore"
@@ -96,6 +98,16 @@ extension AppDelegate: AppStoreDelegate {
     // This delegate method is only hit when alertType is initialized to .none
     func appStoreDidDetectNewVersionWithoutAlert(message: String, updateType: UpdateType) {
         print(#function, "\(message).\nRelease type: \(updateType.rawValue.capitalized)")
+    }
+    
+    func appStoreCustomPrompt(title: String, message: String, actions: [AppStore.PromptAction]) {
+        let alert = UIAlertController.init(title: "CUSTOM: \(title)", message: message, preferredStyle: .alert)
+        for action in actions {
+            alert.addAction(UIAlertAction.init(title: action.title, style: .default, handler: { (_) in
+                action.action()
+            }))
+        }
+        self.window?.rootViewController?.present(alert, animated: true, completion: nil)
     }
 }
 
