@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name             = 'AppStore'
   s.version          = '1.0.0'
-  s.summary          = 'An active-able UILabel for iOS in Swift.'
+  s.summary          = 'An AppStore version cheaking framework in Swift.'
 
   s.homepage         = 'https://github.com/Meniny/AppStore'
   s.license          = { :type => 'MIT', :file => 'LICENSE.md' }
